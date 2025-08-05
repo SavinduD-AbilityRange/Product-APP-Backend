@@ -85,9 +85,9 @@ class ProductController extends Controller
             ]);
 
             if ($request->hasFile('image')) {
-                $imageFile = $request->file('image'); // ✅ avoid reuse
+                $imageFile = $request->file('image'); 
                 $filename = time() . '_' . $imageFile->getClientOriginalName();
-                $imageFile->move(public_path('uploads'), $filename);
+                $imageFile->move(base_path('public/uploads'), $filename);
                 $product->image = 'uploads/' . $filename;
             }
 
