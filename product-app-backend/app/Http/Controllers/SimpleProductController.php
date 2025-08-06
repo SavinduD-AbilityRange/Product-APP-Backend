@@ -16,6 +16,7 @@ class SimpleProductController extends Controller
     {
         if ($request->isMethod('PUT') && str_contains($request->header('Content-Type', ''), 'multipart/form-data')) {
             $input = [];
+            $files = [];
             $contentType = $request->header('Content-Type');
             
             if (preg_match('/boundary=(.*)$/', $contentType, $matches)) {
@@ -37,18 +38,111 @@ class SimpleProductController extends Controller
                         // Extract field name from Content-Disposition header
                         if (preg_match('/name="([^"]+)"/', $headers, $nameMatches)) {
                             $fieldName = $nameMatches[1];
-                            $input[$fieldName] = $data;
+                            
+                            // Check if this is a file upload
+                            if (preg_match('/filename="([^"]*)"/', $headers, $filenameMatches)) {
+                                $filename = $filenameMatches[1];
+                                if (!empty($filename)) {
+                                    // Create a temporary file for the uploaded data
+                                    $tempFile = tmpfile();
+                                    fwrite($tempFile, $data);
+                                    $tempPath = stream_get_meta_data($tempFile)['uri'];
+                                    
+                                    // Create a mock UploadedFile-like object
+                                    $files[$fieldName] = [
+                                        'name' => $filename,
+                                        'type' => $this->extractContentType($headers),
+                                        'tmp_name' => $tempPath,
+                                        'error' => 0,
+                                        'size' => strlen($data),
+                                        'data' => $data
+                                    ];
+                                }
+                            } else {
+                                // Regular form field
+                                $input[$fieldName] = $data;
+                            }
                         }
                     }
                 }
                 
                 // Merge parsed data with request
                 $request->merge($input);
+                $request->files->replace($files);
                 error_log('Parsed multipart data: ' . json_encode($input));
+                error_log('Parsed files: ' . json_encode(array_keys($files)));
             }
         }
         
         return $request;
+    }
+
+    /**
+     * Extract content type from headers
+     */
+    private function extractContentType($headers)
+    {
+        if (preg_match('/Content-Type:\s*([^\r\n]+)/i', $headers, $matches)) {
+            return trim($matches[1]);
+        }
+        return 'application/octet-stream';
+    }
+
+    /**
+     * Handle file upload and return the public URL
+     */
+    private function handleFileUpload($file)
+    {
+        if (!$file) {
+            return null;
+        }
+
+        try {
+            // Generate unique filename
+            $filename = uniqid() . '_' . time();
+            
+            // Get file extension from original name if available
+            if (is_array($file) && isset($file['name'])) {
+                $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+                if ($extension) {
+                    $filename .= '.' . $extension;
+                }
+            } elseif (method_exists($file, 'getClientOriginalExtension')) {
+                $extension = $file->getClientOriginalExtension();
+                if ($extension) {
+                    $filename .= '.' . $extension;
+                }
+            }
+
+            // Create products directory in storage
+            $uploadPath = storage_path('app/public/products');
+            if (!is_dir($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+
+            $filePath = $uploadPath . '/' . $filename;
+
+            // Handle different file types
+            if (is_array($file) && isset($file['data'])) {
+                // From our custom multipart parser
+                file_put_contents($filePath, $file['data']);
+            } elseif (method_exists($file, 'move')) {
+                // Standard UploadedFile
+                $file->move($uploadPath, $filename);
+            } elseif (is_uploaded_file($file['tmp_name'] ?? '')) {
+                // Standard PHP upload
+                move_uploaded_file($file['tmp_name'], $filePath);
+            } else {
+                throw new \Exception('Invalid file upload');
+            }
+
+            // Return public URL
+            return '/storage/products/' . $filename;
+
+        } catch (\Exception $e) {
+            error_log('File upload error: ' . $e->getMessage());
+            throw new \Exception('Failed to upload file: ' . $e->getMessage());
+        }
     }
 
     public function index()
@@ -75,15 +169,21 @@ class SimpleProductController extends Controller
                 'name' => 'required|string|max:255',
                 'category' => 'required|string|max:255',
                 'price' => 'required|numeric|min:0',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048' // Allow image files up to 2MB
             ]);
+
+            // Handle image upload if present
+            $imagePath = null;
+            if ($request->hasFile('image')) {
+                $imagePath = $this->handleFileUpload($request->file('image'));
+            }
 
             // ✅ Actually save to database
             $product = Product::create([
                 'name' => $request->name,
                 'category' => $request->category,
                 'price' => $request->price,
-                'image' => $request->image
+                'image' => $imagePath
             ]);
 
             return response()->json([
@@ -107,7 +207,7 @@ class SimpleProductController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            // Parse multipart form data for PUT requests
+            // ✅ Parse multipart form data for PUT requests
             $request = $this->parseMultipartData($request);
 
             // === DEBUG: Log what we received ===
@@ -116,7 +216,7 @@ class SimpleProductController extends Controller
             error_log('Request method: ' . $request->method());
             error_log('Content-Type: ' . $request->header('Content-Type'));
             error_log('Request body: ' . json_encode($request->all()));
-            error_log('Raw input: ' . substr($request->getContent(), 0, 500) . '...');
+            error_log('Files: ' . json_encode(array_keys($request->files->all())));
             error_log('================');
 
             // Find the product
@@ -128,10 +228,10 @@ class SimpleProductController extends Controller
                 'name' => 'sometimes|required|string|max:255',
                 'category' => 'sometimes|required|string|max:255',
                 'price' => 'sometimes|required|numeric|min:0',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
             ]);
 
-            // Extract form data explicitly
+            // ✅ Extract form data explicitly
             $updateData = [];
             if ($request->filled('name')) {
                 $updateData['name'] = $request->input('name');
@@ -142,13 +242,26 @@ class SimpleProductController extends Controller
             if ($request->filled('price')) {
                 $updateData['price'] = (float) $request->input('price');
             }
-            if ($request->has('image')) {
-                $updateData['image'] = $request->input('image');
+
+            // Handle image upload
+            if ($request->hasFile('image') || $request->files->has('image')) {
+                $imageFile = $request->file('image') ?: $request->files->get('image');
+                $imagePath = $this->handleFileUpload($imageFile);
+                if ($imagePath) {
+                    // Delete old image if exists
+                    if ($product->image) {
+                        $oldImagePath = storage_path('app/public' . str_replace('/storage', '', $product->image));
+                        if (file_exists($oldImagePath)) {
+                            unlink($oldImagePath);
+                        }
+                    }
+                    $updateData['image'] = $imagePath;
+                }
             }
 
             error_log('Update data to save: ' . json_encode($updateData));
 
-            // Only update if we have data to update
+            // ✅ Only update if we have data to update
             if (!empty($updateData)) {
                 $product->update($updateData);
             }
@@ -164,7 +277,8 @@ class SimpleProductController extends Controller
                     'method' => $request->method(),
                     'content_type' => $request->header('Content-Type'),
                     'received_data' => $request->all(),
-                    'update_data' => $updateData
+                    'update_data' => $updateData,
+                    'has_file' => $request->hasFile('image') || $request->files->has('image')
                 ]
             ]);
 
@@ -185,8 +299,19 @@ class SimpleProductController extends Controller
     public function destroy($id)
     {
         try {
-            // Find and delete the product
+            // Find the product
             $product = Product::findOrFail($id);
+            
+            // Delete associated image file if exists
+            if ($product->image) {
+                $imagePath = storage_path('app/public' . str_replace('/storage', '', $product->image));
+                if (file_exists($imagePath)) {
+                    unlink($imagePath);
+                    error_log('Deleted image file: ' . $imagePath);
+                }
+            }
+            
+            // Delete the product
             $product->delete();
 
             return response()->json([

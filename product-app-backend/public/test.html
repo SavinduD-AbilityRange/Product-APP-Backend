@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .product { border: 1px solid #ddd; margin: 10px 0; padding: 15px; border-radius: 8px; }
+        .product img { max-width: 200px; height: auto; border-radius: 4px; }
+        .form-group { margin: 10px 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select { padding: 8px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>Product API Test Page</h1>
+    
+    <!-- Add Product Form -->
+    <div>
+        <h2>Add New Product</h2>
+        <form id="addProductForm">
+            <div class="form-group">
+                <label for="name">Product Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="category">Category:</label>
+                <input type="text" id="category" name="category" required>
+            </div>
+            <div class="form-group">
+                <label for="price">Price:</label>
+                <input type="number" id="price" name="price" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label for="image">Product Image:</label>
+                <input type="file" id="image" name="image" accept="image/*">
+            </div>
+            <button type="submit">Add Product</button>
+        </form>
+        <div id="message"></div>
+    </div>
+
+    <!-- Products List -->
+    <div>
+        <h2>Products</h2>
+        <button onclick="loadProducts()">Refresh Products</button>
+        <div id="productsList"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:8000';
+
+        // Load products
+        async function loadProducts() {
+            try {
+                const response = await fetch(`${API_BASE}/products`);
+                const data = await response.json();
+                
+                if (data.products) {
+                    displayProducts(data.products);
+                } else {
+                    document.getElementById('productsList').innerHTML = '<p class="error">Failed to load products</p>';
+                }
+            } catch (error) {
+                document.getElementById('productsList').innerHTML = '<p class="error">Error: ' + error.message + '</p>';
+            }
+        }
+
+        // Display products
+        function displayProducts(products) {
+            const container = document.getElementById('productsList');
+            
+            if (products.length === 0) {
+                container.innerHTML = '<p>No products found</p>';
+                return;
+            }
+
+            let html = '';
+            products.forEach(product => {
+                html += `
+                    <div class="product">
+                        <h3>${product.name}</h3>
+                        <p><strong>Category:</strong> ${product.category}</p>
+                        <p><strong>Price:</strong> $${product.price}</p>
+                        <p><strong>ID:</strong> ${product.id}</p>
+                        ${product.image ? `
+                            <div>
+                                <strong>Image:</strong><br>
+                                <img src="${API_BASE}${product.image}" alt="${product.name}" 
+                                     onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vdCBmb3VuZDwvdGV4dD48L3N2Zz4='; this.alt='Image not found';">
+                                <br><small>URL: ${API_BASE}${product.image}</small>
+                            </div>
+                        ` : '<p><em>No image</em></p>'}
+                        <button onclick="deleteProduct(${product.id})" style="background: #dc3545;">Delete</button>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Add product
+        document.getElementById('addProductForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('name', document.getElementById('name').value);
+            formData.append('category', document.getElementById('category').value);
+            formData.append('price', document.getElementById('price').value);
+            
+            const imageFile = document.getElementById('image').files[0];
+            if (imageFile) {
+                formData.append('image', imageFile);
+            }
+
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = '<p>Adding product...</p>';
+
+            try {
+                const response = await fetch(`${API_BASE}/products`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    messageDiv.innerHTML = '<p class="success">Product added successfully!</p>';
+                    document.getElementById('addProductForm').reset();
+                    loadProducts(); // Refresh the list
+                } else {
+                    messageDiv.innerHTML = '<p class="error">Error: ' + (data.error || 'Unknown error') + '</p>';
+                }
+            } catch (error) {
+                messageDiv.innerHTML = '<p class="error">Error: ' + error.message + '</p>';
+            }
+        });
+
+        // Delete product
+        async function deleteProduct(id) {
+            if (!confirm('Are you sure you want to delete this product?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/products/${id}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('Product deleted successfully!');
+                    loadProducts(); // Refresh the list
+                } else {
+                    alert('Error: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // Load products on page load
+        loadProducts();
+    </script>
+</body>
+</html>
