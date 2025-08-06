@@ -13,6 +13,10 @@ class CreateProductsTable extends Migration
             $table->string('name');
             $table->string('category');
             $table->decimal('price', 10, 2);
+            $table->text('description')->nullable();
+            $table->integer('stock_quantity')->default(0);
+            $table->string('sku')->nullable();
+            $table->tinyInteger('status')->default(1);
             $table->string('image')->nullable();
             $table->timestamps();
         });

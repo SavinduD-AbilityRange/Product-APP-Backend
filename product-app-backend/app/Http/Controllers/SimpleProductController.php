@@ -67,6 +67,22 @@ class SimpleProductController extends Controller
         }
     }
     
+    public function show($id)
+    {
+        try {
+            $product = Product::findOrFail($id);
+            return response()->json([
+                'message' => 'Product retrieved successfully',
+                'product' => $product
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Product not found',
+                'message' => $e->getMessage()
+            ], 404);
+        }
+    }
+    
     /**
      * Process base64 image and save to storage
      */

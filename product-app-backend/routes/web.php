@@ -38,6 +38,29 @@ Route::get('/check-env', function () {
 
 // 📦 PRODUCT CRUD ROUTES
 Route::get('/products', 'App\Http\Controllers\SimpleProductController@index');           // List all products
+Route::get('/products/{id}', 'App\Http\Controllers\SimpleProductController@show');       // Get a single product
 Route::post('/products', 'App\Http\Controllers\SimpleProductController@store');          // Add a new product
 Route::put('/products/{id}', 'App\Http\Controllers\SimpleProductController@update');     // Update an existing product
+Route::patch('/products/{id}', 'App\Http\Controllers\SimpleProductController@update');   // Update an existing product (PATCH)
 Route::delete('/products/{id}', 'App\Http\Controllers\SimpleProductController@destroy'); // Delete a product
+
+// 🖼️ IMAGE SERVING ROUTE
+Route::get('/storage/images/{filename}', function ($filename) {
+    $path = storage_path('app/public/images/' . $filename);
+    
+    if (!file_exists($path)) {
+        abort(404, 'Image not found');
+    }
+    
+    $type = 'image/jpeg'; // Default to JPEG
+    $extension = pathinfo($filename, PATHINFO_EXTENSION);
+    if ($extension === 'png') {
+        $type = 'image/png';
+    } elseif ($extension === 'gif') {
+        $type = 'image/gif';
+    }
+    
+    return response()->file($path, [
+        'Content-Type' => $type
+    ]);
+});
