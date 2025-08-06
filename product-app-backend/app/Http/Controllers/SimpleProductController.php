@@ -75,7 +75,7 @@ class SimpleProductController extends Controller
                 'name' => 'required|string|max:255',
                 'category' => 'required|string|max:255',
                 'price' => 'required|numeric|min:0',
-                'image' => 'nullable|string'
+                'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
             ]);
 
             // ✅ Actually save to database
@@ -107,7 +107,7 @@ class SimpleProductController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            // ✅ Parse multipart form data for PUT requests
+            // Parse multipart form data for PUT requests
             $request = $this->parseMultipartData($request);
 
             // === DEBUG: Log what we received ===
@@ -128,10 +128,10 @@ class SimpleProductController extends Controller
                 'name' => 'sometimes|required|string|max:255',
                 'category' => 'sometimes|required|string|max:255',
                 'price' => 'sometimes|required|numeric|min:0',
-                'image' => 'nullable|string'
+                'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
             ]);
 
-            // ✅ Extract form data explicitly
+            // Extract form data explicitly
             $updateData = [];
             if ($request->filled('name')) {
                 $updateData['name'] = $request->input('name');
@@ -148,7 +148,7 @@ class SimpleProductController extends Controller
 
             error_log('Update data to save: ' . json_encode($updateData));
 
-            // ✅ Only update if we have data to update
+            // Only update if we have data to update
             if (!empty($updateData)) {
                 $product->update($updateData);
             }

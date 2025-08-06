@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller
@@ -29,7 +30,7 @@ class ProductController extends Controller
             'name'     => 'required|string',
             'category' => 'required|string',
             'price'    => 'required|numeric',
-            'image'    => 'nullable|image|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $filename = null;
@@ -57,7 +58,7 @@ class ProductController extends Controller
             'name'     => 'required|string',
             'category' => 'required|string',
             'price'    => 'required|numeric',
-            'image'    => 'nullable|image|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $filename = $product->image;
@@ -68,6 +69,7 @@ class ProductController extends Controller
             }
 
             $filename = Str::random(10) . '.' . $request->image->extension();
+            Log::info('Storing image: ' . $filename);
             $request->image->storeAs('public/uploads', $filename);
         }
 

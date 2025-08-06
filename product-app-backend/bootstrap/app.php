@@ -22,6 +22,7 @@ $app = new Laravel\Lumen\Application(
 $app->withFacades();
 $app->withEloquent();
 
+
 /*
 |--------------------------------------------------------------------------
 | Register Config Files
@@ -30,7 +31,7 @@ $app->withEloquent();
 | These allow you to use config() helper and access files like config/filesystems.php
 */
 $app->configure('app');
-$app->configure('filesystems'); // ✅ this line is important for image upload
+$app->configure('filesystems'); 
 
 /*
 |--------------------------------------------------------------------------
