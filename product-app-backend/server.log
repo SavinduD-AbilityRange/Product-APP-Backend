@@ -1,0 +1,79 @@
+[Mon Aug 11 08:36:53 2025] PHP 8.4.11 Development Server (http://0.0.0.0:8000) started
+[Mon Aug 11 08:37:01 2025] 127.0.0.1:64698 Accepted
+[Mon Aug 11 08:37:02 2025] 127.0.0.1:64698 [200]: GET /products
+[Mon Aug 11 08:37:02 2025] 127.0.0.1:64698 Closing
+[Mon Aug 11 08:37:11 2025] 127.0.0.1:64715 Accepted
+[Mon Aug 11 08:37:11 2025] 127.0.0.1:64715 [200]: GET /products
+[Mon Aug 11 08:37:11 2025] 127.0.0.1:64715 Closing
+[Mon Aug 11 08:40:15 2025] 192.168.8.132:64943 Accepted
+[Mon Aug 11 08:40:15 2025] 192.168.8.132:64943 [200]: GET /products
+[Mon Aug 11 08:40:15 2025] 192.168.8.132:64943 Closing
+[Mon Aug 11 08:40:16 2025] 127.0.0.1:64947 Accepted
+[Mon Aug 11 08:40:16 2025] 127.0.0.1:64948 Accepted
+[Mon Aug 11 08:40:16 2025] 127.0.0.1:64949 Accepted
+[Mon Aug 11 08:40:16 2025] 127.0.0.1:64950 Accepted
+[Mon Aug 11 08:40:16 2025] 127.0.0.1:64951 Accepted
+[Mon Aug 11 08:40:16 2025] 127.0.0.1:64952 Accepted
+[Mon Aug 11 08:40:16 2025] 127.0.0.1:64953 Accepted
+[Mon Aug 11 08:40:16 2025] 127.0.0.1:64947 [404]: GET /storage/products/6892f98dd966e_1754462605.jpg - No such file or directory
+[Mon Aug 11 08:40:16 2025] 127.0.0.1:64947 Closing
+[Mon Aug 11 08:40:16 2025] 127.0.0.1:64948 [404]: GET /storage/products/6892fee2c95b1_1754463970.jpg - No such file or directory
+[Mon Aug 11 08:40:16 2025] 127.0.0.1:64948 Closing
+[Mon Aug 11 08:40:16 2025] 127.0.0.1:64949 [404]: GET /storage/products/689300cb4a2c1_1754464459.jpg - No such file or directory
+[Mon Aug 11 08:40:16 2025] 127.0.0.1:64949 Closing
+[Mon Aug 11 08:40:16 2025] 127.0.0.1:64950 [404]: GET /storage/products/68994f6a95c6e_1754877802.jpg - No such file or directory
+[Mon Aug 11 08:40:16 2025] 127.0.0.1:64950 Closing
+[Mon Aug 11 08:40:16 2025] 127.0.0.1:64951 [200]: GET /storage/products/6899529ecdd0a_1754878622.jpg
+[Mon Aug 11 08:40:16 2025] 127.0.0.1:64952 [200]: GET /storage/products/68995505a6fe1_1754879237.jpg
+[Mon Aug 11 08:40:16 2025] 127.0.0.1:64953 [200]: GET /storage/products/6899556320bee_1754879331.jpg
+[Mon Aug 11 08:40:16 2025] 127.0.0.1:64951 Closing
+[Mon Aug 11 08:40:16 2025] 127.0.0.1:64952 Closing
+[Mon Aug 11 08:40:16 2025] 127.0.0.1:64953 Closing
+[Mon Aug 11 08:40:20 2025] 127.0.0.1:64960 Accepted
+[Mon Aug 11 08:40:20 2025] 127.0.0.1:64961 Accepted
+[Mon Aug 11 08:40:20 2025] 127.0.0.1:64962 Accepted
+[Mon Aug 11 08:40:20 2025] 127.0.0.1:64963 Accepted
+[Mon Aug 11 08:40:20 2025] 127.0.0.1:64960 [404]: GET /storage/products/6892f98dd966e_1754462605.jpg - No such file or directory
+[Mon Aug 11 08:40:20 2025] 127.0.0.1:64960 Closing
+[Mon Aug 11 08:40:20 2025] 127.0.0.1:64961 [404]: GET /storage/products/689300cb4a2c1_1754464459.jpg - No such file or directory
+[Mon Aug 11 08:40:20 2025] 127.0.0.1:64961 Closing
+[Mon Aug 11 08:40:20 2025] 127.0.0.1:64962 [404]: GET /storage/products/68994f6a95c6e_1754877802.jpg - No such file or directory
+[Mon Aug 11 08:40:20 2025] 127.0.0.1:64962 Closing
+[Mon Aug 11 08:40:20 2025] 127.0.0.1:64963 [404]: GET /storage/products/6892fee2c95b1_1754463970.jpg - No such file or directory
+[Mon Aug 11 08:40:20 2025] 127.0.0.1:64963 Closing
+[Mon Aug 11 08:40:36 2025] 192.168.8.132:64980 Accepted
+[Mon Aug 11 08:40:36 2025] 192.168.8.132:64980 [201]: POST /products/
+[Mon Aug 11 08:40:36 2025] 192.168.8.132:64980 Closing
+[Mon Aug 11 08:40:37 2025] 192.168.8.132:64983 Accepted
+[Mon Aug 11 08:40:37 2025] 192.168.8.132:64983 [200]: GET /products
+[Mon Aug 11 08:40:37 2025] 192.168.8.132:64983 Closing
+[Mon Aug 11 08:40:37 2025] 127.0.0.1:64985 Accepted
+[Mon Aug 11 08:40:37 2025] 127.0.0.1:64986 Accepted
+[Mon Aug 11 08:40:37 2025] 127.0.0.1:64987 Accepted
+[Mon Aug 11 08:40:37 2025] 127.0.0.1:64988 Accepted
+[Mon Aug 11 08:40:37 2025] 127.0.0.1:64989 Accepted
+[Mon Aug 11 08:40:37 2025] 127.0.0.1:64985 [404]: GET /storage/products/6892f98dd966e_1754462605.jpg - No such file or directory
+[Mon Aug 11 08:40:37 2025] 127.0.0.1:64985 Closing
+[Mon Aug 11 08:40:37 2025] 127.0.0.1:64986 [404]: GET /storage/products/6892fee2c95b1_1754463970.jpg - No such file or directory
+[Mon Aug 11 08:40:37 2025] 127.0.0.1:64986 Closing
+[Mon Aug 11 08:40:37 2025] 127.0.0.1:64987 [404]: GET /storage/products/689300cb4a2c1_1754464459.jpg - No such file or directory
+[Mon Aug 11 08:40:37 2025] 127.0.0.1:64987 Closing
+[Mon Aug 11 08:40:37 2025] 127.0.0.1:64988 [404]: GET /storage/products/68994f6a95c6e_1754877802.jpg - No such file or directory
+[Mon Aug 11 08:40:37 2025] 127.0.0.1:64988 Closing
+[Mon Aug 11 08:40:37 2025] 127.0.0.1:64989 [200]: GET /storage/products/68995f2cd362c_1754881836.jpg
+[Mon Aug 11 08:40:37 2025] 127.0.0.1:64989 Closing
+[Mon Aug 11 08:40:43 2025] 192.168.8.132:64998 Accepted
+[Mon Aug 11 08:40:43 2025] 192.168.8.132:64998 [200]: DELETE /products/23
+[Mon Aug 11 08:40:43 2025] 192.168.8.132:64998 Closing
+[Mon Aug 11 08:40:43 2025] 192.168.8.132:65000 Accepted
+[Mon Aug 11 08:40:43 2025] 192.168.8.132:65000 [200]: GET /products
+[Mon Aug 11 08:40:43 2025] 192.168.8.132:65000 Closing
+[Mon Aug 11 08:40:43 2025] 127.0.0.1:65002 Accepted
+[Mon Aug 11 08:40:43 2025] 127.0.0.1:65003 Accepted
+[Mon Aug 11 08:40:43 2025] 127.0.0.1:65004 Accepted
+[Mon Aug 11 08:40:43 2025] 127.0.0.1:65002 [404]: GET /storage/products/6892f98dd966e_1754462605.jpg - No such file or directory
+[Mon Aug 11 08:40:43 2025] 127.0.0.1:65002 Closing
+[Mon Aug 11 08:40:43 2025] 127.0.0.1:65003 [404]: GET /storage/products/6892fee2c95b1_1754463970.jpg - No such file or directory
+[Mon Aug 11 08:40:43 2025] 127.0.0.1:65003 Closing
+[Mon Aug 11 08:40:43 2025] 127.0.0.1:65004 [404]: GET /storage/products/689300cb4a2c1_1754464459.jpg - No such file or directory
+[Mon Aug 11 08:40:43 2025] 127.0.0.1:65004 Closing
