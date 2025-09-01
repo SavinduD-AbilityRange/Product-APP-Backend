@@ -1,10 +1,11 @@
 <?php
 $router = app('router');
 $router->group(['namespace' => 'App\\Http\\Controllers'], function () use ($router) {
-    $router->post('/register', 'AuthController@register');
     $router->post('/login', 'AuthController@login');
     $router->post('/send-otp', 'AuthController@sendOtp');
     $router->post('/verify-otp', 'AuthController@verifyOtp');
+    $router->post('/signup', 'AuthController@signup');
+    $router->post('/verify-email', 'AuthController@verifyEmail');
 });
 
 /*
@@ -44,12 +45,12 @@ $router->get('/check-env', function () {
 });
 
 
-$router->get('/products', 'App\\Http\\Controllers\\SimpleProductController@index');           // List all products
-$router->get('/products/{id}', 'App\\Http\\Controllers\\SimpleProductController@show');       // Get a single product
-$router->post('/products', 'App\\Http\\Controllers\\SimpleProductController@store');          // Add a new product
-$router->put('/products/{id}', 'App\\Http\\Controllers\\SimpleProductController@update');     // Update an existing product
-$router->patch('/products/{id}', 'App\\Http\\Controllers\\SimpleProductController@update');   // Update an existing product (PATCH)
-$router->delete('/products/{id}', 'App\\Http\\Controllers\\SimpleProductController@destroy'); // Delete a product
+$router->get('/products', 'App\\Http\\Controllers\\SimpleProductController@index');         
+$router->get('/products/{id}', 'App\\Http\\Controllers\\SimpleProductController@show');       
+$router->post('/products', 'App\\Http\\Controllers\\SimpleProductController@store');          
+$router->put('/products/{id}', 'App\\Http\\Controllers\\SimpleProductController@update');     
+$router->patch('/products/{id}', 'App\\Http\\Controllers\\SimpleProductController@update');   
+$router->delete('/products/{id}', 'App\\Http\\Controllers\\SimpleProductController@destroy'); 
 
 
 $router->get('/storage/images/{filename}', function ($filename) {
