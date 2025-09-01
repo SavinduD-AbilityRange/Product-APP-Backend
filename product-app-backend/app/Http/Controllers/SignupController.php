@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class SignupController extends Controller
 {
@@ -27,7 +28,7 @@ class SignupController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'dob' => $request->dob,
-            'created_at' => now(),
+            'created_at' => \Carbon\Carbon::now(),
         ]);
 
         return response()->json([

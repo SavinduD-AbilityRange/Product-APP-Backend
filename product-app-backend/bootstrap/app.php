@@ -28,10 +28,15 @@ $app->withEloquent();
 | Register Config Files
 |--------------------------------------------------------------------------
 |
-| These allow you to use config() helper and access files like config/filesystems.php
-*/
-$app->configure('app');
+    $app->configure('app');
+    $app->configure('filesystems');
+    $app->configure('jwt');
+    $app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
+    $app->withFacades();
+    class_alias(Tymon\JWTAuth\Facades\JWTAuth::class, 'JWTAuth');
+    class_alias(Tymon\JWTAuth\Facades\JWTFactory::class, 'JWTFactory');
 $app->configure('filesystems'); 
+$app->configure('jwt');
 
 /*
 |--------------------------------------------------------------------------
@@ -66,9 +71,9 @@ $app->middleware([
 |
 | Assign route-specific middleware
 */
-// $app->routeMiddleware([
-//     'auth' => App\Http\Middleware\Authenticate::class,
-// ]);
+$app->routeMiddleware([
+    'auth' => App\Http\Middleware\Authenticate::class,
+]);
 
 
 /*
@@ -83,6 +88,7 @@ $app->middleware([
 // $app->register(App\Providers\EventServiceProvider::class);
 
 $app->register(Illuminate\Filesystem\FilesystemServiceProvider::class); // ✅ Needed for image upload
+$app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------
@@ -90,5 +96,8 @@ $app->register(Illuminate\Filesystem\FilesystemServiceProvider::class); // ✅ N
 |--------------------------------------------------------------------------
 */
 require __DIR__.'/../routes/web.php';
+
+class_alias(Tymon\JWTAuth\Facades\JWTAuth::class, 'JWTAuth');
+class_alias(Tymon\JWTAuth\Facades\JWTFactory::class, 'JWTFactory');
 
 return $app;

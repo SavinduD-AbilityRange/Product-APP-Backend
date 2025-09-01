@@ -1,5 +1,6 @@
 <?php
 
+
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -11,7 +12,6 @@
 |
 */
 
-// 🏠 Root route
 Route::get('/', function () {
     return response()->json([
         'message' => 'Welcome to Product API',
@@ -27,7 +27,6 @@ Route::get('/', function () {
     ]);
 });
 
-// 🧪 Test routes
 Route::get('/ping', function () {
     return response()->json(['message' => 'API is working ✅']);
 });
@@ -36,8 +35,12 @@ Route::get('/check-env', function () {
     return response()->json(['DB_DATABASE' => env('DB_DATABASE')]);
 });
 
-// 📦 PRODUCT CRUD ROUTES
 Route::get('/products', 'App\Http\Controllers\SimpleProductController@index');           // List all products
 Route::post('/products', 'App\Http\Controllers\SimpleProductController@store');          // Add a new product
 Route::put('/products/{id}', 'App\Http\Controllers\SimpleProductController@update');     // Update an existing product
 Route::delete('/products/{id}', 'App\Http\Controllers\SimpleProductController@destroy'); // Delete a product
+
+Route::post('/signup', 'App\Http\Controllers\SignupController@signup');
+Route::post('/login', 'App\Http\Controllers\AuthController@login');
+Route::get('/me', ['middleware' => 'auth:api', 'uses' => 'App\Http\Controllers\AuthController@me']);
+
