@@ -71,9 +71,9 @@ $app->middleware([
 |
 | Assign route-specific middleware
 */
-$app->routeMiddleware([
-    'auth' => App\Http\Middleware\Authenticate::class,
-]);
+//$app->routeMiddleware([
+//    'auth' => App\Http\Middleware\Authenticate::class,
+//]);
 
 
 /*
@@ -87,7 +87,7 @@ $app->routeMiddleware([
 // $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
 
-$app->register(Illuminate\Filesystem\FilesystemServiceProvider::class); // ✅ Needed for image upload
+$app->register(Illuminate\Filesystem\FilesystemServiceProvider::class); 
 $app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
 
 /*
@@ -95,9 +95,10 @@ $app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
 | Load The Application Routes
 |--------------------------------------------------------------------------
 */
-require __DIR__.'/../routes/web.php';
-
-class_alias(Tymon\JWTAuth\Facades\JWTAuth::class, 'JWTAuth');
-class_alias(Tymon\JWTAuth\Facades\JWTFactory::class, 'JWTFactory');
+$app->router->group([
+    'namespace' => 'App\Http\Controllers',
+], function ($router) {
+    require __DIR__.'/../routes/web.php';
+});
 
 return $app;

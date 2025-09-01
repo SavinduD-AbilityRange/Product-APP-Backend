@@ -13,34 +13,23 @@
 */
 
 Route::get('/', function () {
-    return response()->json([
-        'message' => 'Welcome to Product API',
-        'version' => '1.0.0',
-        'endpoints' => [
-            'GET /ping' => 'Test API connection',
-            'GET /check-env' => 'Check environment configuration',
-            'GET /products' => 'List all products',
-            'POST /products' => 'Create a new product',
-            'PUT /products/{id}' => 'Update a product',
-            'DELETE /products/{id}' => 'Delete a product'
-        ]
-    ]);
+    return "Product App API is running";
 });
+// 1st September 2025 integrated Customer API - Ashini 19:40
+Route::post('/customers', 'CustomerController@store'); 
 
-Route::get('/ping', function () {
-    return response()->json(['message' => 'API is working ✅']);
+Route::post('/products', 'App\Http\Controllers\SimpleProductController@store');         
+Route::group(['prefix' => 'products'], function () {
+    Route::get('/', 'ProductController@index');         // GET all products
+    Route::post('/', 'ProductController@store');        // POST new product
+    Route::get('{id}', 'ProductController@show');       // GET one product
+    Route::put('{id}', 'ProductController@update');     // PUT update product
+    Route::delete('{id}', 'ProductController@destroy'); // DELETE product
 });
+// 1st September 2025 integrated APIs  - Ashini 19:44
 
-Route::get('/check-env', function () {
-    return response()->json(['DB_DATABASE' => env('DB_DATABASE')]);
-});
-
-Route::get('/products', 'App\Http\Controllers\SimpleProductController@index');           // List all products
-Route::post('/products', 'App\Http\Controllers\SimpleProductController@store');          // Add a new product
 Route::put('/products/{id}', 'App\Http\Controllers\SimpleProductController@update');     // Update an existing product
-Route::delete('/products/{id}', 'App\Http\Controllers\SimpleProductController@destroy'); // Delete a product
-
-Route::post('/signup', 'App\Http\Controllers\SignupController@signup');
-Route::post('/login', 'App\Http\Controllers\AuthController@login');
-Route::get('/me', ['middleware' => 'auth:api', 'uses' => 'App\Http\Controllers\AuthController@me']);
+Route::post('/signup', 'AuthController@signup');
+Route::post('/verify-email', 'AuthController@verifyEmail');
+Route::post('/login', 'AuthController@login');
 
