@@ -1,4 +1,11 @@
 <?php
+$router = app('router');
+$router->group(['namespace' => 'App\\Http\\Controllers'], function () use ($router) {
+    $router->post('/register', 'AuthController@register');
+    $router->post('/login', 'AuthController@login');
+    $router->post('/send-otp', 'AuthController@sendOtp');
+    $router->post('/verify-otp', 'AuthController@verifyOtp');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -11,8 +18,8 @@
 |
 */
 
-// 🏠 Root route
-Route::get('/', function () {
+
+$router->get('/', function () {
     return response()->json([
         'message' => 'Welcome to Product API',
         'version' => '1.0.0',
@@ -27,32 +34,32 @@ Route::get('/', function () {
     ]);
 });
 
-// 🧪 Test routes
-Route::get('/ping', function () {
+
+$router->get('/ping', function () {
     return response()->json(['message' => 'API is working ✅']);
 });
 
-Route::get('/check-env', function () {
+$router->get('/check-env', function () {
     return response()->json(['DB_DATABASE' => env('DB_DATABASE')]);
 });
 
-// 📦 PRODUCT CRUD ROUTES
-Route::get('/products', 'App\Http\Controllers\SimpleProductController@index');           // List all products
-Route::get('/products/{id}', 'App\Http\Controllers\SimpleProductController@show');       // Get a single product
-Route::post('/products', 'App\Http\Controllers\SimpleProductController@store');          // Add a new product
-Route::put('/products/{id}', 'App\Http\Controllers\SimpleProductController@update');     // Update an existing product
-Route::patch('/products/{id}', 'App\Http\Controllers\SimpleProductController@update');   // Update an existing product (PATCH)
-Route::delete('/products/{id}', 'App\Http\Controllers\SimpleProductController@destroy'); // Delete a product
 
-// 🖼️ IMAGE SERVING ROUTE
-Route::get('/storage/images/{filename}', function ($filename) {
+$router->get('/products', 'App\\Http\\Controllers\\SimpleProductController@index');           // List all products
+$router->get('/products/{id}', 'App\\Http\\Controllers\\SimpleProductController@show');       // Get a single product
+$router->post('/products', 'App\\Http\\Controllers\\SimpleProductController@store');          // Add a new product
+$router->put('/products/{id}', 'App\\Http\\Controllers\\SimpleProductController@update');     // Update an existing product
+$router->patch('/products/{id}', 'App\\Http\\Controllers\\SimpleProductController@update');   // Update an existing product (PATCH)
+$router->delete('/products/{id}', 'App\\Http\\Controllers\\SimpleProductController@destroy'); // Delete a product
+
+
+$router->get('/storage/images/{filename}', function ($filename) {
     $path = storage_path('app/public/images/' . $filename);
     
     if (!file_exists($path)) {
         abort(404, 'Image not found');
     }
     
-    $type = 'image/jpeg'; // Default to JPEG
+    $type = 'image/jpeg';
     $extension = pathinfo($filename, PATHINFO_EXTENSION);
     if ($extension === 'png') {
         $type = 'image/png';

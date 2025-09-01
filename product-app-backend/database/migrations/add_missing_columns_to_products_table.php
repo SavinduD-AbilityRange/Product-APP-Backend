@@ -6,13 +6,11 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            // Add missing columns only if they don't exist
+            
             if (!Schema::hasColumn('products', 'description')) {
                 $table->text('description')->nullable()->after('price');
             }
@@ -28,13 +26,11 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+   
     public function down(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            // Remove the columns we added
+        
             if (Schema::hasColumn('products', 'description')) {
                 $table->dropColumn('description');
             }

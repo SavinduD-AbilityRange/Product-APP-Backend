@@ -19,7 +19,20 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var string[]
      */
     protected $fillable = [
-        'name', 'email',
+        'first_name',
+        'last_name',
+        'email',
+        'password',
+        'dob',
+        'address',
+        'profile_picture',
+        'parent_email',
+        'otp',
+        'otp_expires_at',
+        'is_verified',
+        'parent_otp',
+        'parent_otp_expires_at',
+        'is_parent_verified',
     ];
 
     /**
@@ -29,5 +42,9 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      */
     protected $hidden = [
         'password',
+        'otp',
+        'otp_expires_at',
+        'parent_otp',
+        'parent_otp_expires_at',
     ];
 }
