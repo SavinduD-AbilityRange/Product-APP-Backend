@@ -6,25 +6,24 @@ $router->group(['namespace' => 'App\\Http\\Controllers'], function () use ($rout
     $router->post('/verify-otp', 'AuthController@verifyOtp');
     $router->post('/signup', 'AuthController@signup');
     $router->post('/verify-email', 'AuthController@verifyEmail');
+    $router->group(['middleware' => 'auth'], function () use ($router) {
+        $router->get('/profile', 'AuthController@getProfile');
+        $router->put('/profile', 'AuthController@editProfile');
+        $router->post('/logout', 'AuthController@logout');
+    });
 });
-
-/*
-|--------------------------------------------------------------------------
-| Application Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register all of the routes for an application.
-| It is a breeze. Simply tell Lumen the URIs it should respond to
-| and give it the Closure to call when that URI is requested.
-|
-*/
-
 
 $router->get('/', function () {
     return response()->json([
         'message' => 'Welcome to Product API',
         'version' => '1.0.0',
         'endpoints' => [
+            'POST /signup' => 'Register a new user',
+            'POST /verify-email' => 'Verify email with OTP',
+            'POST /login' => 'User login',
+            'POST /logout' => 'User logout (requires auth)',
+            'GET /profile' => 'Get user profile (requires auth)',
+            'PUT /profile' => 'Update user profile (requires auth)',
             'GET /ping' => 'Test API connection',
             'GET /check-env' => 'Check environment configuration',
             'GET /products' => 'List all products',
@@ -37,7 +36,7 @@ $router->get('/', function () {
 
 
 $router->get('/ping', function () {
-    return response()->json(['message' => 'API is working ✅']);
+    return response()->json(['message' => 'API is working']);
 });
 
 $router->get('/check-env', function () {

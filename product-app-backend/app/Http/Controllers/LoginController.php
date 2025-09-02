@@ -28,7 +28,7 @@ class LoginController extends Controller
             return response()->json(['message' => 'Email not verified.'], 403);
         }
 
-        $otp_code = rand(100000, 999999);
+        $otp_code = rand(1000, 9999);
         $customer->otp_code = $otp_code;
         $customer->save();
 
@@ -44,7 +44,7 @@ class LoginController extends Controller
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required|string',
-            'otp_code' => 'required|digits:6',
+            'otp_code' => 'required|digits:4',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
