@@ -20,7 +20,10 @@ class AuthController extends Controller
             'password' => 'required|string|min:6|confirmed',
             'date_of_birth' => 'required|date',
             'role' => 'required|integer|in:1,2,3',
-            'parent_id' => 'nullable|integer|exists:customer,id',
+            'middle_name' => 'nullable|string',
+            'profile_image' => 'nullable|string',
+           
+            'parent_email' => 'nullable|email|exists:customer,email',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
@@ -29,11 +32,21 @@ class AuthController extends Controller
         $dob = Carbon::parse($request->date_of_birth);
         $age = $dob->age;
 
-        // [01/09/2025 |Asmitha T| 15.26] If under 16, parent_id is required
-        if ($age < 16 && !$request->parent_id) {
-            return response()->json([
-                'message' => 'Parent account is required for users under 16.'
-            ], 422);
+        // [02/09/2025 |Asmitha T| 12.16] If under 16, parent_email is required
+        $parent_id = null;
+        if ($age < 16) {
+            if (!$request->parent_email) {
+                return response()->json([
+                    'message' => 'Parent email is required for users under 16.'
+                ], 422);
+            }
+            $parent = Customer::where('email', $request->parent_email)->first();
+            if (!$parent) {
+                return response()->json([
+                    'message' => 'Parent account not found.'
+                ], 404);
+            }
+            $parent_id = $parent->id;
         }
 
         $otp_code = rand(100000, 999999);
@@ -45,7 +58,7 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
             'date_of_birth' => $request->date_of_birth,
             'role' => $request->role,
-            'parent_id' => $request->parent_id,
+            'parent_id' => $parent_id,
             'otp_code' => $otp_code,
             'status' => 'inactive',
         ]);
