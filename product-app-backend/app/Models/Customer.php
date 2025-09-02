@@ -25,4 +25,14 @@ class Customer extends Model
     protected $hidden = [
         'password',
     ];
+
+    public function userInterests()
+    {
+        return $this->hasMany(UserInterest::class, 'user_id');
+    }
+
+    public function interests()
+    {
+        return $this->belongsToMany(Interest::class, 'user_interests', 'user_id', 'interest_id');
+    }
 }

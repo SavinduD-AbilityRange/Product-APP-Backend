@@ -28,8 +28,16 @@ Route::group(['prefix' => 'products'], function () {
 });
 // 1st September 2025 integrated APIs  - Ashini 19:44
 
-Route::put('/products/{id}', 'App\Http\Controllers\SimpleProductController@update');     // Update an existing product
+Route::put('/products/{id}', 'App\Http\Controllers\SimpleProductController@update');     
 Route::post('/signup', 'AuthController@signup');
 Route::post('/verify-email', 'AuthController@verifyEmail');
 Route::post('/login', 'AuthController@login');
+
+// 2nd September 2025 User Interest Routes - Ashini
+Route::get('/interests', 'UserInterestController@getInterests');
+Route::get('/user-interests', 'UserInterestController@getUserInterests');
+Route::post('/user-interests', 'UserInterestController@addUserInterests');
+Route::put('/user-interests', 'UserInterestController@updateUserInterests');
+Route::delete('/user-interests', 'UserInterestController@deleteUserInterest');
+Route::delete('/user-interests/all', 'UserInterestController@deleteAllUserInterests');
 

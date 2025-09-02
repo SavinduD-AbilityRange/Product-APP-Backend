@@ -20,7 +20,8 @@ class TokenHelper
             'iat' => time(),
             'exp' => time() + 3600,
         ];
-        $key = env('JWT_SECRET', 'your-secret-key');
+        // 2nd September 2025 Generate 256-bit JWT secret key - Ashini 
+        $key = env('JWT_SECRET', bin2hex(random_bytes(32)));
         return JWT::encode($payload, $key, 'HS256');
     }
 
@@ -32,5 +33,10 @@ class TokenHelper
     public static function createNormalToken()
     {
         return bin2hex(random_bytes(16));
+    }
+
+    public static function generate256BitJWTSecret()
+    {
+        return bin2hex(random_bytes(32)); 
     }
 }

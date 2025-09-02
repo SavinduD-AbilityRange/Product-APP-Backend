@@ -28,7 +28,7 @@ class LoginController extends Controller
             return response()->json(['message' => 'Email not verified.'], 403);
         }
 
-        $otp_code = rand(100000, 999999);
+        $otp_code = rand(1000, 9999);
         $customer->otp_code = $otp_code;
         $customer->save();
 
@@ -44,7 +44,7 @@ class LoginController extends Controller
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required|string',
-            'otp_code' => 'required|digits:6',
+            'otp_code' => 'required|digits:4',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
@@ -61,6 +61,10 @@ class LoginController extends Controller
             return response()->json(['message' => 'Invalid OTP code.'], 403);
         }
 
+        // Get API key from userauth table
+        $userAuth = \App\Models\UserAuth::where('user_id', $customer->id)->first();
+        $signupApiKey = $userAuth ? $userAuth->user_api_key : null;
+
         $jwt = TokenHelper::createJWT($customer);
         $api_token = TokenHelper::createApiToken();
         $normal_token = TokenHelper::createNormalToken();
@@ -73,6 +77,7 @@ class LoginController extends Controller
             'jwt_token' => $jwt,
             'api_token' => $api_token,
             'normal_token' => $normal_token,
+            'signup_api_key' => $signupApiKey,
             'user_details' => [
                 'id' => $customer->id,
                 'profile_image' => $customer->profile_image,

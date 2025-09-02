@@ -15,10 +15,10 @@ class CreateCustomersTable extends Migration
             $table->string('email', 100)->unique();
             $table->string('password', 255);
             $table->date('date_of_birth');
-            $table->integer('role');
+            $table->integer('role'); // 1 admin, 2 manager, 3 user
             $table->unsignedBigInteger('parent_id')->nullable();
             $table->string('otp_code', 6)->nullable();
-            $table->string('status', 20)->default('inactive');
+            $table->string('status', 20)->default('inactive'); // 1 active 0 inactive
             $table->timestamps();
             $table->foreign('parent_id')->references('id')->on('customers')->onDelete('cascade');
         });

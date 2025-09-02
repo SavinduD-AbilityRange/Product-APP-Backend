@@ -36,7 +36,7 @@ class AuthController extends Controller
             ], 422);
         }
 
-        $otp_code = rand(100000, 999999);
+        $otp_code = rand(1000, 9999);
         $customer = Customer::create([
             'first_name' => $request->first_name,
             'middle_name' => $request->middle_name,
@@ -51,10 +51,30 @@ class AuthController extends Controller
         ]);
 
        
+        // Generate static 8-character API key
+        $apiKey = bin2hex(random_bytes(4)); // 8 hex characters
+
+        // Store in userauth table
+        try {
+            \App\Models\UserAuth::create([
+                'user_id' => $customer->id,
+                'user_role' => $request->role ?? $customer->role,
+                'user_api_key' => $apiKey,
+                'user_status' => 'active',
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Failed to create UserAuth: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Signup failed. Please try again.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
         return response()->json([
             'message' => 'Signup successful. Please verify your email with the OTP sent.',
             'user_id' => $customer->id,
-            'otp_code' => $otp_code
+            'otp_code' => $otp_code,
+            'api_key' => $apiKey
         ], 201);
     }
 
@@ -75,12 +95,16 @@ class AuthController extends Controller
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
-       
-    $token = \App\Helpers\TokenHelper::createToken($customer);
+        // Get API key from userauth table
+        $userAuth = \App\Models\UserAuth::where('user_id', $customer->id)->first();
+        $apiKey = $userAuth ? $userAuth->user_api_key : null;
+
+        $token = \App\Helpers\TokenHelper::createToken($customer);
 
         return response()->json([
             'message' => 'Login successful',
             'token' => $token,
+            'api_key' => $apiKey,
             'user' => $customer
         ], 200);
     }
@@ -89,7 +113,7 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
-            'otp_code' => 'required|digits:6',
+            'otp_code' => 'required|digits:4',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
