@@ -10,10 +10,12 @@ use App\Helpers\TokenHelper;
 class LoginController extends Controller
 {
     // [01/09/2025 |Asmitha T| 15.26] Request OTP for login
+    //[02/09/2025 |Asmitha T| 11.46]  User submits email and password, OTP is sent if credentials are valid
     public function requestOtp(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
+            'password' => 'required|string',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
@@ -25,6 +27,9 @@ class LoginController extends Controller
         }
         if (!$customer->email_verified) {
             return response()->json(['message' => 'Email not verified.'], 403);
+        }
+        if (!Hash::check($request->password, $customer->password)) {
+            return response()->json(['message' => 'Invalid credentials.'], 401);
         }
 
         $otp_code = rand(100000, 999999);
@@ -39,11 +44,11 @@ class LoginController extends Controller
         ], 200);
     }
 
+    //[02/09/2025 |Asmitha T| 11.46]  User submits email and OTP, login is allowed if OTP matches
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
-            'password' => 'required|string',
             'otp_code' => 'required|digits:6',
         ]);
         if ($validator->fails()) {
@@ -51,8 +56,8 @@ class LoginController extends Controller
         }
 
         $customer = Customer::where('email', $request->email)->first();
-        if (!$customer || !Hash::check($request->password, $customer->password)) {
-            return response()->json(['message' => 'Invalid credentials.'], 401);
+        if (!$customer) {
+            return response()->json(['message' => 'User not found.'], 404);
         }
         if (!$customer->email_verified) {
             return response()->json(['message' => 'Email not verified.'], 403);
@@ -66,7 +71,6 @@ class LoginController extends Controller
         $api_token = TokenHelper::createApiToken();
         $normal_token = TokenHelper::createNormalToken();
 
-       
         $children = Customer::where('parent_id', $customer->id)->get();
 
         return response()->json([
