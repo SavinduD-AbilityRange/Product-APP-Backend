@@ -21,7 +21,8 @@ class TokenHelper
 
     public static function createApiToken()
     {
-        return bin2hex(random_bytes(32));
+        //[02/09/2025 |Asmitha T| 11.46] Generate an 8-character 
+        return substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'), 0, 8);
     }
 
     public static function createNormalToken()

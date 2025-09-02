@@ -9,6 +9,9 @@ use App\Helpers\TokenHelper;
 
 class LoginController extends Controller
 {
+    //[02/09/2025 |Asmitha T| 11.54] Secret key for JWT or encryption 
+    private $secret = 'a-string-secret-at-least-256-bits-long';
+
     // [01/09/2025 |Asmitha T| 15.26] Request OTP for login
     //[02/09/2025 |Asmitha T| 11.46]  User submits email and password, OTP is sent if credentials are valid
     public function requestOtp(Request $request)
@@ -76,8 +79,8 @@ class LoginController extends Controller
         return response()->json([
             'message' => 'Login successful.',
             'jwt_token' => $jwt,
-            'api_token' => $api_token,
-            'normal_token' => $normal_token,
+            //[02/09/2025 |Asmitha T| 12.00] Generate an API key
+            'api_key' => $api_token,
             'user_details' => [
                 'id' => $customer->id,
                 'profile_image' => $customer->profile_image,
