@@ -5,11 +5,11 @@ $router->get('/', function () {
 });
 
 $router->group(['prefix' => 'products'], function () use ($router) {
-    $router->get('/', 'ProductController@index');         // GET all products
-    $router->post('/', 'ProductController@store');        // POST new product
-    $router->get('{id}', 'ProductController@show');       // GET one product
-    $router->put('{id}', 'ProductController@update');     // PUT update product
-    $router->delete('{id}', 'ProductController@destroy'); // DELETE product
+    $router->get('/', 'ProductController@index');         
+    $router->post('/', 'ProductController@store');        
+    $router->get('{id}', 'ProductController@show');       
+    $router->put('{id}', 'ProductController@update');     
+    $router->delete('{id}', 'ProductController@destroy'); 
 });
 
 //[01/09/2025 |Asmitha T| 15.26] - Auth Routes
@@ -18,3 +18,6 @@ $router->post('verify-email', 'AuthController@verifyEmail');
 
 $router->post('login', 'LoginController@login');
 $router->post('/request-otp', 'LoginController@requestOtp');
+//[02/09/2025 |Asmitha T| 11.11] - User Interest Routes
+$router->post('user/interests', 'UserInterestController@store');
+$router->get('user/interests/{userId}', 'UserInterestController@show');
