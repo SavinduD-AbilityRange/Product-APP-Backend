@@ -35,7 +35,7 @@ class LoginController extends Controller
 
         return response()->json([
             'message' => 'OTP sent to email.',
-            'otp_code' => $otp_code // For testing, remove in production
+            'otp_code' => $otp_code 
         ], 200);
     }
 
