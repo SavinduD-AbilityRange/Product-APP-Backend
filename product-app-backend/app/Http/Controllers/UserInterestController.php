@@ -10,9 +10,8 @@ use Illuminate\Support\Facades\Validator;
 
 class UserInterestController extends Controller
 {
-    /**
-     * Get all available interests (maximum 10)
-     */
+    //2nd September 2025- Get all available interests (maximum 10)- Ashini
+     
     public function getInterests()
     {
         $interests = Interest::where('is_active', true)->take(10)->get();
@@ -22,9 +21,8 @@ class UserInterestController extends Controller
         ], 200);
     }
 
-    /**
-     * Get user's selected interests
-     */
+    // 2nd September 2025 - Get user's selected interests - Ashini
+     
     public function getUserInterests(Request $request)
     {
         $userId = $request->input('user_id');
@@ -49,9 +47,7 @@ class UserInterestController extends Controller
         ], 200);
     }
 
-    /**
-     * Add user interests (maximum 3 total)
-     */
+    // 2nd September 2025 Add user interests (maximum 3 total) - Ashini
     public function addUserInterests(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -65,9 +61,9 @@ class UserInterestController extends Controller
         }
 
         $userId = $request->user_id;
-        $interestIds = array_unique($request->interest_ids); // Remove duplicates
+        $interestIds = array_unique($request->interest_ids);
 
-        // Check current user interests count
+        //2nd September 2025-  Check current user interests count- Ashini
         $existingCount = UserInterest::where('user_id', $userId)->count();
         $newCount = count($interestIds);
         
@@ -80,7 +76,7 @@ class UserInterestController extends Controller
             ], 422);
         }
 
-        // Check for duplicate interests
+        // 2nd September 2025 -Check for duplicate interests- Ashini
         $existingInterests = UserInterest::where('user_id', $userId)
             ->whereIn('interest_id', $interestIds)
             ->pluck('interest_id')
@@ -93,7 +89,7 @@ class UserInterestController extends Controller
             ], 422);
         }
 
-        // Add new interests
+        // 2nd September 2025 - Add new interests - Ashini
         $addedInterests = [];
         foreach ($interestIds as $interestId) {
             $userInterest = UserInterest::create([
@@ -110,9 +106,8 @@ class UserInterestController extends Controller
         ], 201);
     }
 
-    /**
-     * Update/Replace user interests (maximum 3 total)
-     */
+    // 2nd September 2025-Update/Replace user interests (maximum 3 total)-Ashini
+     
     public function updateUserInterests(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -126,9 +121,9 @@ class UserInterestController extends Controller
         }
 
         $userId = $request->user_id;
-        $interestIds = array_unique($request->interest_ids); // Remove duplicates
+        $interestIds = array_unique($request->interest_ids); 
 
-        // Validate maximum 3 interests
+        // 2nd September 2025 - Validate maximum 3 interests-Ashini
         if (count($interestIds) > 3) {
             return response()->json([
                 'message' => 'Maximum 3 interests allowed per user.',
@@ -137,10 +132,10 @@ class UserInterestController extends Controller
             ], 422);
         }
 
-        // Remove existing interests
+        
         UserInterest::where('user_id', $userId)->delete();
 
-        // Add new interests
+        
         $addedInterests = [];
         foreach ($interestIds as $interestId) {
             $userInterest = UserInterest::create([
@@ -157,9 +152,8 @@ class UserInterestController extends Controller
         ], 200);
     }
 
-    /**
-     * Delete specific user interest
-     */
+    //2nd September 2025- Delete specific user interest - Ashini
+     
     public function deleteUserInterest(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -186,9 +180,7 @@ class UserInterestController extends Controller
         }
     }
 
-    /**
-     * Delete all user interests
-     */
+    // 2nd September 2025 - Delete all user interests - Ashini
     public function deleteAllUserInterests(Request $request)
     {
         $validator = Validator::make($request->all(), [
