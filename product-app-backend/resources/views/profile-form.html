@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Profile Form - Product App</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                padding: 20px;
+            }
+
+            .container {
+                max-width: 800px;
+                margin: 0 auto;
+                background: white;
+                border-radius: 15px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                overflow: hidden;
+            }
+
+            .header {
+                background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+                color: white;
+                padding: 30px;
+                text-align: center;
+            }
+
+            .header h1 {
+                font-size: 2.5em;
+                margin-bottom: 10px;
+            }
+
+            .header p {
+                font-size: 1.1em;
+                opacity: 0.9;
+            }
+
+            .form-container {
+                padding: 40px;
+            }
+
+            .form-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 25px;
+                margin-bottom: 30px;
+            }
+
+            .form-group {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .form-group.full-width {
+                grid-column: 1 / -1;
+            }
+
+            label {
+                font-weight: 600;
+                color: #333;
+                margin-bottom: 8px;
+                font-size: 14px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            input,
+            textarea,
+            select {
+                padding: 12px 15px;
+                border: 2px solid #e1e1e1;
+                border-radius: 8px;
+                font-size: 16px;
+                transition: all 0.3s ease;
+                background: #f9f9f9;
+            }
+
+            input:focus,
+            textarea:focus,
+            select:focus {
+                outline: none;
+                border-color: #4caf50;
+                background: white;
+                box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+            }
+
+            .file-input-wrapper {
+                position: relative;
+                overflow: hidden;
+                display: inline-block;
+                width: 100%;
+            }
+
+            .file-input {
+                position: absolute;
+                left: -9999px;
+            }
+
+            .file-input-label {
+                padding: 12px 15px;
+                border: 2px dashed #4caf50;
+                border-radius: 8px;
+                background: #f8f8f8;
+                cursor: pointer;
+                text-align: center;
+                transition: all 0.3s ease;
+                display: block;
+                color: #4caf50;
+                font-weight: 500;
+            }
+
+            .file-input-label:hover {
+                background: #e8f5e8;
+                border-color: #45a049;
+            }
+
+            .children-counter {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .counter-btn {
+                background: #4caf50;
+                color: white;
+                border: none;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                font-size: 20px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .counter-btn:hover {
+                background: #45a049;
+                transform: scale(1.1);
+            }
+
+            .counter-display {
+                font-size: 24px;
+                font-weight: bold;
+                color: #333;
+                min-width: 50px;
+                text-align: center;
+            }
+
+            .submit-btn {
+                background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+                color: white;
+                padding: 15px 40px;
+                border: none;
+                border-radius: 8px;
+                font-size: 18px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                width: 100%;
+                margin-top: 20px;
+            }
+
+            .submit-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+            }
+
+            .api-info {
+                background: #f0f8ff;
+                border: 1px solid #4caf50;
+                border-radius: 8px;
+                padding: 20px;
+                margin-top: 30px;
+            }
+
+            .api-info h3 {
+                color: #4caf50;
+                margin-bottom: 15px;
+            }
+
+            .endpoint {
+                background: #333;
+                color: #fff;
+                padding: 10px;
+                border-radius: 5px;
+                font-family: monospace;
+                margin: 10px 0;
+            }
+
+            @media (max-width: 768px) {
+                .form-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .container {
+                    margin: 10px;
+                }
+
+                .form-container {
+                    padding: 20px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>📋 Profile Form</h1>
+                <p>Complete your profile information</p>
+            </div>
+
+            <div class="form-container">
+                <form id="profileForm" enctype="multipart/form-data">
+                    <div class="form-grid">
+                        <!-- Personal Information -->
+                        <div class="form-group">
+                            <label for="first_name">First Name *</label>
+                            <input
+                                type="text"
+                                id="first_name"
+                                name="first_name"
+                                required
+                                maxlength="255"
+                            />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="middle_name">Middle Name</label>
+                            <input
+                                type="text"
+                                id="middle_name"
+                                name="middle_name"
+                                maxlength="255"
+                            />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="last_name">Last Name *</label>
+                            <input
+                                type="text"
+                                id="last_name"
+                                name="last_name"
+                                required
+                                maxlength="255"
+                            />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                required
+                            />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dob">Date of Birth *</label>
+                            <input type="date" id="dob" name="dob" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="children">Number of Children</label>
+                            <div class="children-counter">
+                                <button
+                                    type="button"
+                                    class="counter-btn"
+                                    onclick="changeChildren(-1)"
+                                >
+                                    -
+                                </button>
+                                <div class="counter-display" id="childrenCount">
+                                    0
+                                </div>
+                                <button
+                                    type="button"
+                                    class="counter-btn"
+                                    onclick="changeChildren(1)"
+                                >
+                                    +
+                                </button>
+                                <input
+                                    type="hidden"
+                                    id="children"
+                                    name="children"
+                                    value="0"
+                                />
+                            </div>
+                        </div>
+
+                        <!-- Address Information -->
+                        <div class="form-group full-width">
+                            <label for="address">Address *</label>
+                            <textarea
+                                id="address"
+                                name="address"
+                                rows="3"
+                                required
+                                placeholder="Enter your full address"
+                            ></textarea>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="form-group full-width">
+                            <label for="description">About Yourself</label>
+                            <textarea
+                                id="description"
+                                name="description"
+                                rows="4"
+                                placeholder="Tell us about yourself..."
+                            ></textarea>
+                        </div>
+
+                        <!-- Profile Pictures -->
+                        <div class="form-group">
+                            <label for="profile_picture">Profile Picture</label>
+                            <div class="file-input-wrapper">
+                                <input
+                                    type="file"
+                                    id="profile_picture"
+                                    name="profile_picture"
+                                    class="file-input"
+                                    accept="image/jpeg,image/png,image/jpg,image/gif"
+                                />
+                                <label
+                                    for="profile_picture"
+                                    class="file-input-label"
+                                >
+                                    📸 Choose Profile Picture
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="profile_image">Additional Image</label>
+                            <div class="file-input-wrapper">
+                                <input
+                                    type="file"
+                                    id="profile_image"
+                                    name="profile_image"
+                                    class="file-input"
+                                    accept="image/jpeg,image/png,image/jpg,image/gif"
+                                />
+                                <label
+                                    for="profile_image"
+                                    class="file-input-label"
+                                >
+                                    🖼️ Choose Additional Image
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Parent Information (for users under 16) -->
+                        <div
+                            class="form-group full-width"
+                            id="parentEmailGroup"
+                            style="display: none"
+                        >
+                            <label for="parent_email"
+                                >Parent Email (Required for users under
+                                16)</label
+                            >
+                            <input
+                                type="email"
+                                id="parent_email"
+                                name="parent_email"
+                                placeholder="parent@example.com"
+                            />
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        💾 Save Profile
+                    </button>
+                </form>
+
+                <!-- API Information -->
+                <div class="api-info">
+                    <h3>🔗 API Endpoints</h3>
+
+                    <h4>Update Profile:</h4>
+                    <div class="endpoint">
+                        PUT http://localhost:8080/profile
+                    </div>
+                    <p>
+                        <strong>Headers:</strong> Authorization: Bearer
+                        {your_token}
+                    </p>
+
+                    <h4>Get Profile:</h4>
+                    <div class="endpoint">
+                        GET http://localhost:8080/profile
+                    </div>
+                    <p>
+                        <strong>Headers:</strong> Authorization: Bearer
+                        {your_token}
+                    </p>
+
+                    <h4>Form Data Fields:</h4>
+                    <ul>
+                        <li>
+                            <strong>first_name</strong> - String (required, max
+                            255)
+                        </li>
+                        <li>
+                            <strong>middle_name</strong> - String (optional, max
+                            255)
+                        </li>
+                        <li>
+                            <strong>last_name</strong> - String (required, max
+                            255)
+                        </li>
+                        <li>
+                            <strong>email</strong> - Email (required, unique)
+                        </li>
+                        <li>
+                            <strong>dob</strong> - Date (required, YYYY-MM-DD)
+                        </li>
+                        <li><strong>address</strong> - String (required)</li>
+                        <li>
+                            <strong>description</strong> - String (optional)
+                        </li>
+                        <li>
+                            <strong>children</strong> - Integer (optional, min
+                            0)
+                        </li>
+                        <li>
+                            <strong>profile_picture</strong> - File (optional,
+                            max 2MB)
+                        </li>
+                        <li>
+                            <strong>profile_image</strong> - File (optional, max
+                            2MB)
+                        </li>
+                        <li>
+                            <strong>parent_email</strong> - Email (required if
+                            under 16)
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            let childrenCount = 0;
+
+            function changeChildren(delta) {
+                childrenCount = Math.max(0, childrenCount + delta);
+                document.getElementById("childrenCount").textContent =
+                    childrenCount;
+                document.getElementById("children").value = childrenCount;
+            }
+
+            // Show/hide parent email field based on age
+            document
+                .getElementById("dob")
+                .addEventListener("change", function () {
+                    const dob = new Date(this.value);
+                    const today = new Date();
+                    const age =
+                        today.getFullYear() -
+                        dob.getFullYear() -
+                        (today.getMonth() < dob.getMonth() ||
+                            (today.getMonth() === dob.getMonth() &&
+                                today.getDate() < dob.getDate()));
+
+                    const parentEmailGroup =
+                        document.getElementById("parentEmailGroup");
+                    const parentEmailInput =
+                        document.getElementById("parent_email");
+
+                    if (age < 16) {
+                        parentEmailGroup.style.display = "block";
+                        parentEmailInput.required = true;
+                    } else {
+                        parentEmailGroup.style.display = "none";
+                        parentEmailInput.required = false;
+                        parentEmailInput.value = "";
+                    }
+                });
+
+            // Update file input labels
+            document.querySelectorAll(".file-input").forEach((input) => {
+                input.addEventListener("change", function () {
+                    const label = document.querySelector(
+                        `label[for="${this.id}"]`
+                    );
+                    if (this.files.length > 0) {
+                        label.textContent = `✅ ${this.files[0].name}`;
+                        label.style.borderColor = "#4CAF50";
+                        label.style.backgroundColor = "#e8f5e8";
+                    }
+                });
+            });
+
+            // Form submission
+            document
+                .getElementById("profileForm")
+                .addEventListener("submit", function (e) {
+                    e.preventDefault();
+
+                    const formData = new FormData(this);
+
+                    // Log form data for testing
+                    console.log("Form Data:");
+                    for (let [key, value] of formData.entries()) {
+                        console.log(key, value);
+                    }
+
+                    alert(
+                        "Form ready for submission! Check console for form data."
+                    );
+                });
+        </script>
+    </body>
+</html>

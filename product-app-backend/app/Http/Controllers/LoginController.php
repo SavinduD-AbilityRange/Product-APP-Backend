@@ -7,8 +7,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Helpers\TokenHelper;
 
-// 1st September 2025 - Implemented the login controller - Yashira 9.45pm
-
 class LoginController extends Controller
 {
     public function requestOtp(Request $request)
@@ -24,7 +22,7 @@ class LoginController extends Controller
         if (!$customer) {
             return response()->json(['message' => 'User not found.'], 404);
         }
-        if (!$customer->email_verified) {
+        if (!$customer->is_verified) {
             return response()->json(['message' => 'Email not verified.'], 403);
         }
 
@@ -54,7 +52,7 @@ class LoginController extends Controller
         if (!$customer || !Hash::check($request->password, $customer->password)) {
             return response()->json(['message' => 'Invalid credentials.'], 401);
         }
-        if (!$customer->email_verified) {
+        if (!$customer->is_verified) {
             return response()->json(['message' => 'Email not verified.'], 403);
         }
         if ($customer->otp_code !== $request->otp_code) {
