@@ -35,24 +35,29 @@ class UserInterestController extends Controller
 
         $userInterests = UserInterest::with('interest')
             ->where('user_id', $userId)
-            ->get()
-            ->pluck('interest');
+            ->get();
+
+        $interests = $userInterests->pluck('interest');
+        $totalCount = $interests->count();
 
         return response()->json([
             'message' => 'User interests retrieved successfully.',
-            'interests' => $userInterests
+            'interests' => $interests,
+            'total_interests' => $totalCount,
+            'max_allowed' => 3,
+            'available_slots' => 3 - $totalCount
         ], 200);
     }
 
     /**
-     * Add user interests (maximum 3)
+     * Add user interests (maximum 3 total)
      */
     public function addUserInterests(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'user_id' => 'required|integer|exists:customers,id',
-            'interest_ids' => 'required|array|max:3',
-            'interest_ids.*' => 'integer|exists:interests,id',
+            'interest_ids' => 'required|array|min:1|max:3',
+            'interest_ids.*' => 'integer|exists:interests,id|distinct',
         ]);
 
         if ($validator->fails()) {
@@ -60,40 +65,60 @@ class UserInterestController extends Controller
         }
 
         $userId = $request->user_id;
-        $interestIds = $request->interest_ids;
+        $interestIds = array_unique($request->interest_ids); // Remove duplicates
 
-        // Check if user already has interests
+        // Check current user interests count
         $existingCount = UserInterest::where('user_id', $userId)->count();
         $newCount = count($interestIds);
         
         if ($existingCount + $newCount > 3) {
             return response()->json([
-                'message' => 'Cannot add interests. Maximum 3 interests allowed per user.'
+                'message' => "Cannot add {$newCount} interests. You already have {$existingCount} interests. Maximum 3 interests allowed per user.",
+                'current_count' => $existingCount,
+                'max_allowed' => 3,
+                'available_slots' => 3 - $existingCount
+            ], 422);
+        }
+
+        // Check for duplicate interests
+        $existingInterests = UserInterest::where('user_id', $userId)
+            ->whereIn('interest_id', $interestIds)
+            ->pluck('interest_id')
+            ->toArray();
+
+        if (!empty($existingInterests)) {
+            return response()->json([
+                'message' => 'Some interests are already added to your profile.',
+                'duplicate_interest_ids' => $existingInterests
             ], 422);
         }
 
         // Add new interests
+        $addedInterests = [];
         foreach ($interestIds as $interestId) {
-            UserInterest::firstOrCreate([
+            $userInterest = UserInterest::create([
                 'user_id' => $userId,
                 'interest_id' => $interestId
             ]);
+            $addedInterests[] = $userInterest->load('interest');
         }
 
         return response()->json([
-            'message' => 'Interests added successfully.'
+            'message' => 'Interests added successfully.',
+            'added_interests' => $addedInterests,
+            'total_interests' => $existingCount + $newCount
         ], 201);
     }
 
     /**
-     * Update/Replace user interests (maximum 3)
+     * Update/Replace user interests (maximum 3 total)
      */
     public function updateUserInterests(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'user_id' => 'required|integer|exists:customers,id',
-            'interest_ids' => 'required|array|max:3',
-            'interest_ids.*' => 'integer|exists:interests,id',
+            'interest_ids' => 'required|array|min:1|max:3',
+            'interest_ids.*' => 'integer|exists:interests,id|distinct',
         ]);
 
         if ($validator->fails()) {
@@ -101,21 +126,34 @@ class UserInterestController extends Controller
         }
 
         $userId = $request->user_id;
-        $interestIds = $request->interest_ids;
+        $interestIds = array_unique($request->interest_ids); // Remove duplicates
+
+        // Validate maximum 3 interests
+        if (count($interestIds) > 3) {
+            return response()->json([
+                'message' => 'Maximum 3 interests allowed per user.',
+                'provided_count' => count($interestIds),
+                'max_allowed' => 3
+            ], 422);
+        }
 
         // Remove existing interests
         UserInterest::where('user_id', $userId)->delete();
 
         // Add new interests
+        $addedInterests = [];
         foreach ($interestIds as $interestId) {
-            UserInterest::create([
+            $userInterest = UserInterest::create([
                 'user_id' => $userId,
                 'interest_id' => $interestId
             ]);
+            $addedInterests[] = $userInterest->load('interest');
         }
 
         return response()->json([
-            'message' => 'Interests updated successfully.'
+            'message' => 'Interests updated successfully.',
+            'interests' => $addedInterests,
+            'total_interests' => count($addedInterests)
         ], 200);
     }
 
